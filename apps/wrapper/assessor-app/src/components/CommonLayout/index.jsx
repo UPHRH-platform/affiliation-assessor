@@ -12,7 +12,7 @@ import CommonModal from "../Modal";
 import isOnline from "is-online";
 import { logout } from "../../utils/index.js";
 import { useEffect } from "react";
-
+import { base64ToPdf } from "../../api";
 
 const CommonLayout = (props) => {
   const navigate = useNavigate();
@@ -20,48 +20,25 @@ const CommonLayout = (props) => {
   const [online, setOnline] = useState(true);
   const onlineInterval = useRef();
 
-  const handleFormDownload = () =>{
-    let url = props.formUrl;
-    let win= window.open(url, "_blank","toolbar=yes,scrollbars=yes,resizable=yes");
-    setTimeout(()=>{
-      win.focus()
-      win.print();
-    },2000)
+  const handleFormDownload = async () => {
 
-    // const doc = new jsPDF({
-    //   format: "a4",
-    //   unit: "px",
-    // });
+    try{
+    props.setIsLoading(true)
+    const res = await base64ToPdf(props.formUrl)
+    console.log(res);
 
-    // // Adding the fonts.
-    // doc.setFont("Inter-Regular", "normal");
-
-    // let iframe = document.createElement("iframe");
-    // iframe.style.visibility = "hidden";
-    // document.body.appendChild(iframe);
-    // let iframedoc = iframe.contentDocument || iframe.contentWindow.document;
-    // let htmlItem = document.getElementsByClassName("container");
-    // iframedoc.body.innerHTML = htmlItem[0].innerHTML;
-
-    // html2canvas(
-      // window.document
-      //   .querySelector("iframe")
-      //   .contentWindow.document.querySelector(".main")
-    //   iframedoc
-    // ).then((canvas) => {
-    //   let base64image = canvas.toDataURL("image/png");
-    //   console.log(base64image);
-    //   let pdf = new jsPDF("p", "px", [1600, 1131]);
-    //   pdf.addImage(base64image, "PNG", 15, 15, 1110, 360);
-    //   pdf.save("enketo-form.pdf");
-    // });
-
-    // doc.html(reportTemplateRef.current, {
-    //   async callback(doc) {
-    //     await doc.save("document");
-    //   },
-    // });
-  }
+    const linkSource = `data:application/pdf;base64,${res.data}`;
+    const downloadLink = document.createElement("a");
+    const fileName = "enketo_form.pdf";
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.target = "_blank";
+    downloadLink.click();
+    props.setIsLoading(false)
+    }catch(error){
+      console.log(error)
+    }
+  };
 
   useEffect(() => {
     onlineInterval.current = setInterval(async () => {
