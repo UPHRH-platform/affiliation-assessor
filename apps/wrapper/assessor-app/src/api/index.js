@@ -37,6 +37,21 @@ export const sendOtpToMobile = async (mobile) => {
   }
 };
 
+export const base64ToPdf = async (postData) => {
+  try {
+    const res = await axios.post(
+      "http://35.207.216.26:8000/convert-via-puppeteer/pdfpuppeteer",
+      {
+        url: postData
+      }
+    );
+    return res;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+}
+
 export const verifyOtpSavePassword = async (mobile, pass, otp) => {
   try {
     const res = await axios.patch(

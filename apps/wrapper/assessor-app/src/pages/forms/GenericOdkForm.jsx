@@ -21,6 +21,7 @@ const ENKETO_URL = process.env.REACT_APP_ENKETO_URL;
 const GenericOdkForm = (props) => {
   const user = getCookie("userData");
   let { formName, date } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
   const scheduleId = useRef();
   const formSpec = {
     forms: {
@@ -173,7 +174,14 @@ const GenericOdkForm = (props) => {
     <CommonLayout
       {...props.commonLayoutProps}
       formUrl={`${ENKETO_URL}/preview?formSpec=${encodedFormSpec}&xform=${encodedFormURI}&userId=${user.user.id}`}
+      setIsLoading={setIsLoading}
     >
+      {isLoading && (
+        <div>
+          <strong>Downloading...</strong>
+        </div>
+      )}
+
       <div className="flex flex-col items-center">
         {encodedFormURI && assData && (
           <>
