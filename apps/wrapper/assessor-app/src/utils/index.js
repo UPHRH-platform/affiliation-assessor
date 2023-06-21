@@ -208,7 +208,7 @@ export const getFormData = async ({
     if (formSpec.date) {
       formData = await getSpecificDataFromForage("selected_assessment_form");
       prefillXMLArgs = [
-        `${formData?.form_name}`,
+        `readonly_${formData?.form_name}`,
         "",
         formData.form_data,
         formData.imageUrls,
